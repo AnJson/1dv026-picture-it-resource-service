@@ -6,15 +6,26 @@
  */
 
 import mongoose from 'mongoose'
-import { isURL, isMimeType } from validator
+import validator from 'validator'
+
+const { isURL } = validator
 
 // Create a schema.
 const schema = new mongoose.Schema({
   imageUrl: {
-    // isURL(str)
+    type: String,
+    required: true,
+    validate: [isURL, 'Please provide a valid image-url.'],
+    trim: true
   },
   contentType: {
-    // isMimeType(str)
+    type: String,
+    required: true,
+    enum: {
+      values: ['image/gif', 'image/jpeg', 'image/png'],
+      message: 'Please provide a valid mime-type.'
+    },
+    trim: true
   },
   description: {
     type: String,
@@ -23,7 +34,9 @@ const schema = new mongoose.Schema({
     trim: true
   },
   author: {
-    // id of owner.
+    type: String,
+    required: true,
+    trim: true
   }
 }, {
   timestamps: true,
@@ -45,7 +58,6 @@ const schema = new mongoose.Schema({
 schema.virtual('id').get(function () {
   return this._id.toHexString()
 })
-
 
 // Create a model using the schema.
 export const Resource = mongoose.model('Resource', schema)

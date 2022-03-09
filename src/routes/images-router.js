@@ -12,8 +12,17 @@ export const router = express.Router()
 
 const controller = new ResourceController()
 
+// Block user from all routes if not valid JWT.
+router.all('*', controller.authenticateJWT)
+
+// Authorize user for single resource.
+router.param('id', controller.authorize)
+
 // Get all images.
-router.get('/', /* authenticate */ /* authorize */ (req, res, next) => controller.index(req, res, next))
+router.get('/', (req, res, next) => controller.index(req, res, next))
 
 // Upload image.
-router.post('/', /* authenticate */ (req, res, next) => controller.register(req, res, next))
+router.post('/', (req, res, next) => controller.indexPost(req, res, next))
+
+// Get single image.
+router.get('/:id', (req, res, next) => controller.image(req, res, next))
