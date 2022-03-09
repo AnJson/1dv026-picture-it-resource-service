@@ -59,6 +59,7 @@ export class ResourceController {
     try {
       console.log('You are getting a single image!')
       console.log(req.user)
+      res.end()
     } catch (error) {
       console.log(error)
     }
@@ -74,11 +75,25 @@ export class ResourceController {
    */
   async authorize (req, res, next, id) {
     try {
-      console.log(id)
-      console.log('authorizing --------------')
       const imageData = await Resource.findById(id)
-      // TODO: Fix!!
-      console.log(imageData)
+
+      // No resource found.
+      if (!imageData) {
+        const err = createError(404, 'The requested resource was not found.')
+
+        next(err)
+        return
+      }
+
+      // Resource found but user is not authorized.
+      if (imageData.author !== req.user.id) {
+        const err = createError(403, 'The request contained valid data and was understood by the server, but the server is refusing action due to the authenticated user not having the necessary permissions for the resource.')
+
+        next(err)
+        return
+      }
+
+      next()
     } catch (error) {
       next(error)
     }
@@ -111,7 +126,7 @@ export class ResourceController {
 
       next()
     } catch (err) {
-      const error = createError(401)
+      const error = createError(401, 'Access token invalid or not provided.')
       error.cause = err
       next(error)
     }
