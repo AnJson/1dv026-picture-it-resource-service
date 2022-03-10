@@ -86,11 +86,9 @@ export class ResourceController {
    */
   async image (req, res, next) {
     try {
-      const image = await Resource.findById(req.image.id)
-
       res
         .status(200)
-        .json(image.toJSON())
+        .json(req.image.toJSON())
     } catch (error) {
       next(error)
     }
