@@ -15,6 +15,22 @@ import { Resource } from '../models/resource.js'
  */
 export class ResourceController {
   /**
+   * Format the raw resource-object.
+   *
+   * @param {object} resource - Document from db.
+   * @returns {object} - Formatted object.
+   */
+  #toSafeObject (resource) {
+    return {
+      imageUrl: resource.imageUrl,
+      description: resource.description,
+      updatedAt: resource.updatedAt,
+      createdAt: resource.createdAt,
+      id: resource.id
+    }
+  }
+
+  /**
    * Json-response with an array of users images.
    * (GET /images).
    *
@@ -28,7 +44,7 @@ export class ResourceController {
 
       res
         .status(200)
-        .json(images.map(image => image.toJSON()))
+        .json(images.map(image => this.#toSafeObject(image)))
     } catch (error) {
       next(error)
     }
@@ -62,7 +78,7 @@ export class ResourceController {
 
       res
         .status(201)
-        .json(savedData.toJSON())
+        .json(this.#toSafeObject(savedData))
     } catch (error) {
       let err = error
 
@@ -88,7 +104,7 @@ export class ResourceController {
     try {
       res
         .status(200)
-        .json(req.image.toJSON())
+        .json(this.#toSafeObject(req.image))
     } catch (error) {
       next(error)
     }
