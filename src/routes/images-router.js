@@ -26,3 +26,6 @@ router.post('/', (req, res, next) => controller.indexPost(req, res, next))
 
 // Get single image.
 router.get('/:id', (req, res, next) => controller.image(req, res, next))
+
+// Total update of image.
+router.put('/:id', (req, res, next) => controller.imagePut(req, res, next))

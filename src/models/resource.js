@@ -14,7 +14,6 @@ const { isURL } = validator
 const schema = new mongoose.Schema({
   imageUrl: {
     type: String,
-    required: true,
     validate: [isURL, 'Please provide a valid image-url.'],
     trim: true
   },
@@ -26,12 +25,10 @@ const schema = new mongoose.Schema({
   },
   author: {
     type: String,
-    required: true,
     trim: true
   },
   resourceId: {
     type: String,
-    required: true,
     trim: true
   }
 }, {

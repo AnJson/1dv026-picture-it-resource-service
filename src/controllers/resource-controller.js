@@ -111,6 +111,36 @@ export class ResourceController {
   }
 
   /**
+   * Return single image as json.
+   * (GET /images/:id).
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async imagePut (req, res, next) {
+    try {
+      const { imageUrl } = await this.#postToImageService({
+        data: req.body.data,
+        contentType: req.body.contentType
+      })
+
+      await Resource.findByIdAndUpdate(req.image.id, {
+        imageUrl,
+        description: req.body.description
+      },
+      { runValidators: true })
+
+      res
+        .status(204)
+        .end()
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  /**
    * Authorize user.
    *
    * @param {object} req - Express request object.
