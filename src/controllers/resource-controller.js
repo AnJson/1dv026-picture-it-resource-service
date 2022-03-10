@@ -24,10 +24,13 @@ export class ResourceController {
    */
   async index (req, res, next) {
     try {
-      console.log('You are in!')
-      console.log(req.user)
+      const images = await Resource.find({ author: req.user.id })
+
+      res
+        .status(200)
+        .json(images.map(image => image.toJSON()))
     } catch (error) {
-      console.log(error)
+      next(error)
     }
   }
 
