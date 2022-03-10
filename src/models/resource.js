@@ -37,6 +37,11 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
+  },
+  resourceId: {
+    type: String,
+    required: true,
+    trim: true
   }
 }, {
   timestamps: true,
@@ -50,6 +55,7 @@ const schema = new mongoose.Schema({
     transform: function (doc, ret) {
       delete ret._id
       delete ret.__v
+      delete ret.resourceId
     },
     virtuals: true // ensure virtual fields are serialized
   }

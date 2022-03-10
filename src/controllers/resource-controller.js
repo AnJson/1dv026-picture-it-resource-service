@@ -40,8 +40,27 @@ export class ResourceController {
    */
   async indexPost (req, res, next) {
     try {
-      console.log('You are POSTING!')
-      console.log(req.user)
+      console.log(req.body)
+      // POST to image-service
+      const { imageUrl, id: imageId } = await this.#postToImageService({
+        data: req.body.data,
+        contentType: req.body.contentType
+      })
+
+      console.log(imageUrl)
+
+      const image = new Resource({
+        imageUrl,
+        contentType: req.body.contentType,
+        description: req.body.description,
+        author: req.user.id,
+        resourceId: imageId
+      })
+
+      const savedData = await image.save()
+
+      console.log(savedData)
+      next()
     } catch (error) {
       console.log(error)
     }
@@ -93,6 +112,9 @@ export class ResourceController {
         return
       }
 
+      // Save resource in request-object.
+      req.image = imageData
+
       next()
     } catch (error) {
       next(error)
@@ -119,6 +141,7 @@ export class ResourceController {
       }
 
       const payload = jwt.verify(token, Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64'))
+
       req.user = {
         id: payload.sub,
         permissionLevel: payload.x_permission_level
@@ -130,5 +153,24 @@ export class ResourceController {
       error.cause = err
       next(error)
     }
+  }
+
+  /**
+   * Send authorized post/put/patch-request to image-service.
+   *
+   * @param {object} data - Request-body object.
+   * @param {object} method - Request-type (POST, PUT, PATCH).
+   * @returns {Promise} - For json-parsed response.
+   */
+  async #postToImageService (data, method = 'POST') {
+    const response = await fetch(process.env.IMAGE_SERVICE_BASE_URL, {
+      method,
+      headers: {
+        'X-API-Private-Token': process.env.ACCESS_TOKEN
+      },
+      body: JSON.stringify(data)
+    })
+
+    return response.json()
   }
 }
