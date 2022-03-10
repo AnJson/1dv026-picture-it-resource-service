@@ -47,11 +47,9 @@ export class ResourceController {
         contentType: req.body.contentType
       })
 
-      console.log(imageUrl)
-
+      // Save image-data
       const image = new Resource({
         imageUrl,
-        contentType: req.body.contentType,
         description: req.body.description,
         author: req.user.id,
         resourceId: imageId
@@ -59,13 +57,9 @@ export class ResourceController {
 
       const savedData = await image.save()
 
-      // TODO: Check the return-value and return json to client.
-      console.log(savedData)
       res
         .status(201)
         .json(savedData.toJSON())
-
-      next() // REMOVE
     } catch (error) {
       let err = error
 
@@ -176,15 +170,15 @@ export class ResourceController {
    * @returns {Promise} - For json-parsed response.
    */
   async #postToImageService (data, method = 'POST') {
+    console.log(JSON.stringify(data))
     const response = await fetch(process.env.IMAGE_SERVICE_BASE_URL, {
       method,
       headers: {
-        'X-API-Private-Token': process.env.ACCESS_TOKEN
+        'X-API-Private-Token': process.env.ACCESS_TOKEN,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     })
-
-    console.log(response) // NOTE: REMOVE!
 
     return response.json()
   }

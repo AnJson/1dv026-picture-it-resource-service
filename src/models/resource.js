@@ -18,15 +18,6 @@ const schema = new mongoose.Schema({
     validate: [isURL, 'Please provide a valid image-url.'],
     trim: true
   },
-  contentType: {
-    type: String,
-    required: true,
-    enum: {
-      values: ['image/gif', 'image/jpeg', 'image/png'],
-      message: 'Please provide a valid mime-type.'
-    },
-    trim: true
-  },
   description: {
     type: String,
     minLength: [1, 'The description must be of minimum length 1 characters.'],
@@ -56,6 +47,7 @@ const schema = new mongoose.Schema({
       delete ret._id
       delete ret.__v
       delete ret.resourceId
+      delete ret.author
     },
     virtuals: true // ensure virtual fields are serialized
   }
