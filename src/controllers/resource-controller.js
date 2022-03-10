@@ -60,11 +60,13 @@ export class ResourceController {
    */
   async indexPost (req, res, next) {
     try {
+      // TODO: Instance of schema model to .validate()
       // POST to image-service
-      const { imageUrl, id: imageId } = await this.#postToImageService({
-        data: req.body.data,
-        contentType: req.body.contentType
-      })
+      const { imageUrl, id: imageId } = await this.#postToImageService(process.env.IMAGE_SERVICE_BASE_URL,
+        {
+          data: req.body.data,
+          contentType: req.body.contentType
+        })
 
       // Save image-data
       const image = new Resource({
@@ -120,23 +122,34 @@ export class ResourceController {
    */
   async imagePut (req, res, next) {
     try {
-      const { imageUrl } = await this.#postToImageService({
-        data: req.body.data,
-        contentType: req.body.contentType
-      })
+      // TODO: Instance of schema model to .validate()
+      const { imageUrl } = await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.image.resourceId}`,
+        {
+          data: req.body.data,
+          contentType: req.body.contentType
+        }, 'PUT')
 
-      await Resource.findByIdAndUpdate(req.image.id, {
+      console.log(imageUrl)
+
+      /* await Resource.findByIdAndUpdate(req.image.id, {
         imageUrl,
         description: req.body.description
       },
       { runValidators: true })
-
+ */
       res
         .status(204)
         .end()
     } catch (error) {
-      console.log(error)
-      next(error)
+      let err = error
+
+      // Validation error(s).
+      if (err.name === 'ValidationError') {
+        err = createError(400, 'The request cannot or will not be processed due to something that is perceived to be a client error (for example, validation error).')
+        err.cause = error
+      }
+
+      next(err)
     }
   }
 
@@ -214,13 +227,13 @@ export class ResourceController {
   /**
    * Send authorized post/put/patch-request to image-service.
    *
+   * @param {string} url - The url to send the request to.
    * @param {object} data - Request-body object.
-   * @param {object} method - Request-type (POST, PUT, PATCH).
+   * @param {string} method - Request-type (POST, PUT, PATCH).
    * @returns {Promise} - For json-parsed response.
    */
-  async #postToImageService (data, method = 'POST') {
-    console.log(JSON.stringify(data))
-    const response = await fetch(process.env.IMAGE_SERVICE_BASE_URL, {
+  async #postToImageService (url, data, method = 'POST') {
+    const response = fetch(url, {
       method,
       headers: {
         'X-API-Private-Token': process.env.ACCESS_TOKEN,
