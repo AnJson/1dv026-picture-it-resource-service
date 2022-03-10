@@ -6,6 +6,7 @@
  */
 
 import jwt from 'jsonwebtoken'
+import fetch from 'node-fetch'
 import createError from 'http-errors'
 import { Resource } from '../models/resource.js'
 
@@ -40,7 +41,6 @@ export class ResourceController {
    */
   async indexPost (req, res, next) {
     try {
-      console.log(req.body)
       // POST to image-service
       const { imageUrl, id: imageId } = await this.#postToImageService({
         data: req.body.data,
@@ -59,10 +59,23 @@ export class ResourceController {
 
       const savedData = await image.save()
 
+      // TODO: Check the return-value and return json to client.
       console.log(savedData)
-      next()
+      res
+        .status(201)
+        .json(savedData.toJSON())
+
+      next() // REMOVE
     } catch (error) {
-      console.log(error)
+      let err = error
+
+      // Validation error(s).
+      if (err.name === 'ValidationError') {
+        err = createError(400, 'The request cannot or will not be processed due to something that is perceived to be a client error (for example, validation error).')
+        err.cause = error
+      }
+
+      next(err)
     }
   }
 
@@ -170,6 +183,8 @@ export class ResourceController {
       },
       body: JSON.stringify(data)
     })
+
+    console.log(response) // NOTE: REMOVE!
 
     return response.json()
   }
