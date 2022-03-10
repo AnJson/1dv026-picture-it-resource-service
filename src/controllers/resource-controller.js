@@ -86,11 +86,13 @@ export class ResourceController {
    */
   async image (req, res, next) {
     try {
-      console.log('You are getting a single image!')
-      console.log(req.user)
-      res.end()
+      const image = await Resource.findById(req.image.id)
+
+      res
+        .status(200)
+        .json(image.toJSON())
     } catch (error) {
-      console.log(error)
+      next(error)
     }
   }
 
