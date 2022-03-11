@@ -31,7 +31,18 @@ try {
   // Error handler.
   app.use(function (err, req, res, next) {
     err.status = err.status || 500
-    err.message = err.status === 500 ? 'An unexpected condition was encountered.' : err.message
+
+    if (err.status === 400) {
+      err.message = 'The request cannot or will not be processed due to something that is perceived to be a client error (for example, validation error).'
+    } else if (err.status === 401) {
+      err.message = 'Access token invalid or not provided.'
+    } else if (err.status === 403) {
+      err.message = 'The request contained valid data and was understood by the server, but the server is refusing action due to the authenticated user not having the necessary permissions for the resource.'
+    } else if (err.status === 404) {
+      err.message = 'The requested resource was not found.'
+    } else if (err.status === 500) {
+      err.message = 'An unexpected condition was encountered.'
+    }
 
     if (req.app.get('env') !== 'development') {
       return res

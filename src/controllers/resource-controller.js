@@ -87,7 +87,7 @@ export class ResourceController {
 
       // Validation error(s).
       if (err.name === 'ValidationError') {
-        err = createError(400, 'The request cannot or will not be processed due to something that is perceived to be a client error (for example, validation error).')
+        err = createError(400)
         err.cause = error
       }
 
@@ -147,7 +147,7 @@ export class ResourceController {
 
       // Validation error(s).
       if (err.name === 'ValidationError') {
-        err = createError(400, 'The request cannot or will not be processed due to something that is perceived to be a client error (for example, validation error).')
+        err = createError(400)
         err.cause = error
       }
 
@@ -169,7 +169,7 @@ export class ResourceController {
 
       // No resource found.
       if (!imageData) {
-        const err = createError(404, 'The requested resource was not found.')
+        const err = createError(404)
 
         next(err)
         return
@@ -177,7 +177,7 @@ export class ResourceController {
 
       // Resource found but user is not authorized.
       if (imageData.author !== req.user.id) {
-        const err = createError(403, 'The request contained valid data and was understood by the server, but the server is refusing action due to the authenticated user not having the necessary permissions for the resource.')
+        const err = createError(403)
 
         next(err)
         return
@@ -220,7 +220,7 @@ export class ResourceController {
 
       next()
     } catch (err) {
-      const error = createError(401, 'Access token invalid or not provided.')
+      const error = createError(401)
       error.cause = err
       next(error)
     }
