@@ -15,7 +15,8 @@ const schema = new mongoose.Schema({
   imageUrl: {
     type: String,
     validate: [isURL, 'Please provide a valid image-url.'],
-    trim: true
+    trim: true,
+    immutable: true
   },
   description: {
     type: String,
@@ -25,11 +26,13 @@ const schema = new mongoose.Schema({
   },
   author: {
     type: String,
-    trim: true
+    trim: true,
+    immutable: true
   },
   resourceId: {
     type: String,
-    trim: true
+    trim: true,
+    immutable: true
   }
 }, {
   timestamps: true,

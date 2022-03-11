@@ -60,13 +60,14 @@ export class ResourceController {
    */
   async indexPost (req, res, next) {
     try {
-      // TODO: Instance of schema model to .validate()
       // POST to image-service
-      const { imageUrl, id: imageId } = await this.#postToImageService(process.env.IMAGE_SERVICE_BASE_URL,
+      const response = await this.#postToImageService(process.env.IMAGE_SERVICE_BASE_URL,
         {
           data: req.body.data,
           contentType: req.body.contentType
         })
+
+      const { imageUrl, id: imageId } = await response.json()
 
       // Save image-data
       const image = new Resource({
@@ -122,21 +123,22 @@ export class ResourceController {
    */
   async imagePut (req, res, next) {
     try {
-      // TODO: Instance of schema model to .validate()
-      const { imageUrl } = await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.image.resourceId}`,
-        {
-          data: req.body.data,
-          contentType: req.body.contentType
-        }, 'PUT')
+      // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
 
-      console.log(imageUrl)
+      const requests = [
+        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.image.resourceId}`,
+          {
+            data: req.body.data,
+            contentType: req.body.contentType
+          }, 'PUT'),
+        await Resource.findByIdAndUpdate(req.image.id, {
+          description: req.body.description
+        },
+        { runValidators: true })
+      ]
 
-      /* await Resource.findByIdAndUpdate(req.image.id, {
-        imageUrl,
-        description: req.body.description
-      },
-      { runValidators: true })
- */
+      await Promise.all(requests)
+
       res
         .status(204)
         .end()
@@ -230,10 +232,10 @@ export class ResourceController {
    * @param {string} url - The url to send the request to.
    * @param {object} data - Request-body object.
    * @param {string} method - Request-type (POST, PUT, PATCH).
-   * @returns {Promise} - For json-parsed response.
+   * @returns {Promise} - For response-object.
    */
   async #postToImageService (url, data, method = 'POST') {
-    const response = fetch(url, {
+    return fetch(url, {
       method,
       headers: {
         'X-API-Private-Token': process.env.ACCESS_TOKEN,
@@ -241,7 +243,5 @@ export class ResourceController {
       },
       body: JSON.stringify(data)
     })
-
-    return response.json()
   }
 }
