@@ -29,3 +29,6 @@ router.get('/:id', (req, res, next) => controller.image(req, res, next))
 
 // Total update of image.
 router.put('/:id', (req, res, next) => controller.imagePut(req, res, next))
+
+// Partial update of image.
+router.patch('/:id', (req, res, next) => controller.imagePatch(req, res, next))

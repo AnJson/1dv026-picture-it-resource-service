@@ -107,7 +107,7 @@ export class ResourceController {
     try {
       res
         .status(200)
-        .json(this.#toSafeObject(req.image))
+        .json(this.#toSafeObject(req.imageResource))
     } catch (error) {
       next(error)
     }
@@ -126,15 +126,50 @@ export class ResourceController {
       // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
 
       const requests = [
-        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.image.resourceId}`,
+        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.imageResource.resourceId}`,
           {
             data: req.body.data,
             contentType: req.body.contentType
           }, 'PUT'),
-        await Resource.findByIdAndUpdate(req.image.id, {
+        await Resource.findByIdAndUpdate(req.imageResource.id, {
           description: req.body.description
         },
         { runValidators: true })
+      ]
+
+      await Promise.all(requests)
+
+      res
+        .status(204)
+        .end()
+    } catch (error) {
+      let err = error
+
+      // Validation error(s).
+      if (err.name === 'ValidationError') {
+        err = createError(400)
+        err.cause = error
+      }
+
+      next(err)
+    }
+  }
+
+  /**
+   * Return single image as json.
+   * (GET /images/:id).
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async imagePatch (req, res, next) {
+    try {
+      // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
+
+      const requests = [
+        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.imageResource.resourceId}`, req.body, 'PATCH'),
+        await Resource.findByIdAndUpdate(req.imageResource.id, req.body, { runValidators: true })
       ]
 
       await Promise.all(requests)
@@ -184,7 +219,7 @@ export class ResourceController {
       }
 
       // Save resource in request-object.
-      req.image = imageData
+      req.imageResource = imageData
 
       next()
     } catch (error) {
