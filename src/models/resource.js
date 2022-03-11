@@ -24,6 +24,14 @@ const schema = new mongoose.Schema({
     maxLength: [500, 'The description must be of maximum length 500 characters.'],
     trim: true
   },
+  contentType: {
+    type: String,
+    enum: {
+      values: ['image/gif', 'image/jpeg', 'image/png'],
+      message: 'Please provide a valid mime-type.'
+    },
+    trim: true
+  },
   author: {
     type: String,
     trim: true,

@@ -24,6 +24,7 @@ export class ResourceController {
     return {
       imageUrl: resource.imageUrl,
       description: resource.description,
+      contentType: resource.contentType,
       updatedAt: resource.updatedAt,
       createdAt: resource.createdAt,
       id: resource.id
@@ -73,6 +74,7 @@ export class ResourceController {
       const image = new Resource({
         imageUrl,
         description: req.body.description,
+        contentType: req.body.contentType,
         author: req.user.id,
         resourceId: imageId
       })
@@ -174,6 +176,42 @@ export class ResourceController {
 
       await Promise.all(requests)
 
+      res
+        .status(204)
+        .end()
+    } catch (error) {
+      let err = error
+
+      // Validation error(s).
+      if (err.name === 'ValidationError') {
+        err = createError(400)
+        err.cause = error
+      }
+
+      next(err)
+    }
+  }
+
+  /**
+   * Return single image as json.
+   * (GET /images/:id).
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async imageDelete (req, res, next) {
+    try {
+      console.log('deleting')
+      // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
+
+      /* const requests = [
+        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.imageResource.resourceId}`, req.body, 'DELETE'),
+        await Resource.findByIdAndUpdate(req.imageResource.id, req.body, { runValidators: true })
+      ]
+
+      await Promise.all(requests)
+ */
       res
         .status(204)
         .end()
