@@ -34,4 +34,4 @@ router.put('/:id', (req, res, next) => controller.imagePut(req, res, next))
 router.patch('/:id', (req, res, next) => controller.imagePatch(req, res, next))
 
 // Delete image.
-router.delete('/:id', (req, res, next) => controller.imagePatch(req, res, next))
+router.delete('/:id', (req, res, next) => controller.imageDelete(req, res, next))

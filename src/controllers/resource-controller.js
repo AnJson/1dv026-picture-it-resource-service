@@ -199,29 +199,18 @@ export class ResourceController {
    */
   async imageDelete (req, res, next) {
     try {
-      console.log('deleting')
-      // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
-
-      /* const requests = [
-        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.imageResource.resourceId}`, req.body, 'DELETE'),
-        await Resource.findByIdAndUpdate(req.imageResource.id, req.body, { runValidators: true })
+      const requests = [
+        await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.imageResource.resourceId}`, {}, 'DELETE'),
+        await Resource.findByIdAndDelete(req.imageResource.id)
       ]
 
       await Promise.all(requests)
- */
+
       res
         .status(204)
         .end()
     } catch (error) {
-      let err = error
-
-      // Validation error(s).
-      if (err.name === 'ValidationError') {
-        err = createError(400)
-        err.cause = error
-      }
-
-      next(err)
+      next(error)
     }
   }
 
