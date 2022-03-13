@@ -133,10 +133,7 @@ export class ResourceController {
             data: req.body.data,
             contentType: req.body.contentType
           }, 'PUT'),
-        await Resource.findByIdAndUpdate(req.imageResource.id, {
-          description: req.body.description
-        },
-        { runValidators: true })
+        await Resource.findByIdAndUpdate(req.imageResource.id, req.body, { runValidators: true })
       ]
 
       await Promise.all(requests)

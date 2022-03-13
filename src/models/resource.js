@@ -16,7 +16,8 @@ const schema = new mongoose.Schema({
     type: String,
     validate: [isURL, 'Please provide a valid image-url.'],
     trim: true,
-    immutable: true
+    immutable: true,
+    required: true
   },
   description: {
     type: String,
@@ -30,17 +31,20 @@ const schema = new mongoose.Schema({
       values: ['image/gif', 'image/jpeg', 'image/png'],
       message: 'Please provide a valid mime-type.'
     },
-    trim: true
+    trim: true,
+    required: true
   },
   author: {
     type: String,
     trim: true,
-    immutable: true
+    immutable: true,
+    required: true
   },
   resourceId: {
     type: String,
     trim: true,
-    immutable: true
+    immutable: true,
+    required: true
   }
 }, {
   timestamps: true,
