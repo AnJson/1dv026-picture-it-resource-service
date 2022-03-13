@@ -81,13 +81,9 @@ export class ResourceController {
           data: req.body.data,
           contentType: req.body.contentType
         })
-      // TODO: Fix bug???????????????
-      console.log(response)
 
       const { imageUrl, id: imageId } = await response.json()
 
-      console.log(imageUrl)
-      console.log(imageId)
       // Save image-data
       const image = new Resource({
         imageUrl,
