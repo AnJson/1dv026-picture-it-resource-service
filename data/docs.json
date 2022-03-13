@@ -1,0 +1,5 @@
+{
+  "message": "Welcome to the resource-service! Please read these documentation.",
+  "description": "This is an API for posting/uploading base64-encoded png, gif and jpeg images.",
+  "endpoints": ["/images", "/images/:id"]
+}
