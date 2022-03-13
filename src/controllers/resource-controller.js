@@ -49,7 +49,7 @@ export class ResourceController {
           author: req.user.id,
           ...filter
         })
-        .select(fields)
+        .select(fields ? fields.split(',').join(' ') : undefined)
         .sort(sort ? sort.split(',').join(' ') : '-createdAt')
         .skip(skip)
         .limit(limit)
