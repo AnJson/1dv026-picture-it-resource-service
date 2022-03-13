@@ -41,7 +41,21 @@ export class ResourceController {
    */
   async index (req, res, next) {
     try {
-      const images = await Resource.find({ author: req.user.id })
+      const { fields, sort, skip, limit, page, ...filter } = req.query
+
+      // Set up query with filters, sorting and pagination.
+      const query = Resource
+        .find({
+          author: req.user.id,
+          ...filter
+        })
+        .select(fields)
+        .sort(sort ? sort.split(',').join(' ') : '-createdAt')
+        .skip(skip)
+        .limit(limit)
+
+      // Execute the query.
+      const images = await query
 
       res
         .status(200)
@@ -67,9 +81,13 @@ export class ResourceController {
           data: req.body.data,
           contentType: req.body.contentType
         })
+      // TODO: Fix bug???????????????
+      console.log(response)
 
       const { imageUrl, id: imageId } = await response.json()
 
+      console.log(imageUrl)
+      console.log(imageId)
       // Save image-data
       const image = new Resource({
         imageUrl,
