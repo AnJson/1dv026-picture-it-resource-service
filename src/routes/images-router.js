@@ -6,14 +6,16 @@
  */
 
 import express from 'express'
-import { ResourceController } from '../controllers/resource-controller.js'
+import { ImageController } from '../controllers/images-controller.js'
+import { rateLimiter } from '../config/rate-limit.js'
 
 export const router = express.Router()
 
-const controller = new ResourceController()
+const controller = new ImageController()
 
 // Block user from all routes if not valid JWT.
-router.all('*', controller.authenticateJWT)
+// Implement rate-limit on all routes on this router.
+router.all('*', controller.authenticateJWT, rateLimiter)
 
 // Authorize user for single resource.
 router.param('id', controller.authorize)

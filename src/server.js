@@ -10,7 +10,6 @@ import helmet from 'helmet'
 import logger from 'morgan'
 import { router } from './routes/router.js'
 import { connectDB } from './config/mongoose.js'
-import { rateLimiter } from './config/rate-limit.js'
 
 try {
   await connectDB()
@@ -25,9 +24,6 @@ try {
 
   // Parse requests of the content type application/json with extended size.
   app.use(express.json({ limit: '500kb' }))
-
-  // Apply the rate limiting middleware on requests to the image-service.
-  app.use('/images', rateLimiter)
 
   // Register routes.
   app.use('/', router)

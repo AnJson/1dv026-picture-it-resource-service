@@ -1,5 +1,5 @@
 /**
- * The ResourceController.
+ * The ImageController.
  *
  * @author Anders Jonsson
  * @version 1.0.0
@@ -13,7 +13,7 @@ import { Resource } from '../models/resource.js'
 /**
  * Encapsulates a controller.
  */
-export class ResourceController {
+export class ImageController {
   /**
    * Format the raw resource-object.
    *
@@ -125,6 +125,7 @@ export class ResourceController {
         .status(200)
         .json(this.#toSafeObject(req.imageResource))
     } catch (error) {
+      console.log(error)
       next(error)
     }
   }
