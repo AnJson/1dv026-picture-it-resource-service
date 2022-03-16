@@ -14,7 +14,7 @@ const { isURL } = validator
 const schema = new mongoose.Schema({
   imageUrl: {
     type: String,
-    validate: [isURL, 'Please provide a valid image-url.'],
+    validate: [isURL, 'Data is required to generate a valid image-url.'],
     trim: true,
     immutable: true,
     required: true

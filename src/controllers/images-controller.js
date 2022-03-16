@@ -140,15 +140,23 @@ export class ImageController {
    */
   async imagePut (req, res, next) {
     try {
-      // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
+      const image = {
+        imageUrl: req.imageResource.imageUrl,
+        description: req.body.description,
+        contentType: req.body.contentType,
+        author: req.user.id,
+        resourceId: req.imageResource.id
+      }
 
       const requests = [
+        // NOTE: Not validating data for image-service as image-service should be responsible for that validation.
         await this.#postToImageService(`${process.env.IMAGE_SERVICE_BASE_URL}/${req.imageResource.resourceId}`,
           {
             data: req.body.data,
             contentType: req.body.contentType
           }, 'PUT'),
-        await Resource.findByIdAndUpdate(req.imageResource.id, req.body, { runValidators: true })
+        // Saving image to db.
+        await Resource.findOneAndReplace({ _id: req.imageResource.id }, image, { returnDocument: 'after' })
       ]
 
       await Promise.all(requests)
